@@ -39,9 +39,9 @@ jobs:
         if: steps.get-upstream.outputs.upstream_url != ''
         run: git fetch upstream
 
-      - name: Merge upstream/main into fork
+      - name: Merge upstream into fork
         if: steps.get-upstream.outputs.upstream_url != ''
         run: |
-          git checkout main
-          git merge upstream/main --no-edit || echo "Merge conflict or nothing to merge"
-          git push origin main
+          git checkout ${{ github.event.repository.default_branch }}
+          git merge upstream/${{ github.event.repository.default_branch }} --no-edit || echo "Merge conflict or nothing to merge"
+          git push origin ${{ github.event.repository.default_branch }}
