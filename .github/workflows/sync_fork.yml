@@ -43,5 +43,5 @@ jobs:
         if: steps.get-upstream.outputs.upstream_url != ''
         run: |
           git checkout ${{ github.event.repository.default_branch }}
-          git merge upstream/${{ github.event.repository.default_branch }} --no-edit || echo "Merge conflict or nothing to merge"
+          git merge upstream/${{ github.event.repository.default_branch }} --allow-unrelated-histories --no-edit || echo "Merge conflict or nothing to merge"
           git push origin ${{ github.event.repository.default_branch }}
