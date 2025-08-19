@@ -1,9 +1,18 @@
 name: Sync Fork
 
+# ⚠️ ВАЖНО: Для работы этого workflow необходимо настроить секрет PAT_TOKEN
+# PAT_TOKEN должен иметь разрешения: repo, workflow
+# Создайте Personal Access Token на https://github.com/settings/tokens
+# и добавьте его в секреты репозитория как PAT_TOKEN
+
 on:
   schedule:
     - cron: '0 3 * * *'  # Запуск каждый день в 3:00 UTC
   workflow_dispatch:     # Возможность запуска вручную через интерфейс
+
+permissions:
+  contents: write
+  actions: read
 
 jobs:
   sync:
@@ -20,6 +29,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Check PAT token
+        run: |
+          if [ -z "${{ secrets.PAT_TOKEN }}" ]; then
+            echo "❌ PAT_TOKEN secret is not configured. Cannot proceed with sync."
+            exit 1
+          fi
+          echo "✅ PAT_TOKEN is configured"
+
       - name: Get upstream repository URL
         id: get-upstream
         run: |
@@ -31,7 +48,7 @@ jobs:
           fi
           echo "upstream_url=$upstream_url" >> $GITHUB_OUTPUT
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
 
       - name: Add upstream remote
         if: steps.get-upstream.outputs.upstream_url != ''
@@ -46,5 +63,29 @@ jobs:
         run: |
           BRANCH="${{ github.event.repository.default_branch }}"
           git checkout "$BRANCH"
-          git merge upstream/"$BRANCH" --allow-unrelated-histories --no-edit || echo "⚠️ Merge conflict — requires manual resolution"
-          git push "https://${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}" "$BRANCH"
+          
+          # Проверяем, есть ли изменения для merge
+          if git merge-base --is-ancestor HEAD upstream/"$BRANCH" 2>/dev/null; then
+            echo "✅ Branch is already up to date with upstream"
+            exit 0
+          fi
+          
+          # Пытаемся выполнить merge
+          if git merge upstream/"$BRANCH" --allow-unrelated-histories --no-edit; then
+            echo "✅ Successfully merged upstream changes"
+          else
+            echo "⚠️ Merge conflict detected — requires manual resolution"
+            echo "Current status:"
+            git status
+            exit 1
+          fi
+          
+          # Пытаемся выполнить push
+          if git push "https://${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}" "$BRANCH"; then
+            echo "✅ Successfully pushed changes to fork"
+          else
+            echo "❌ Failed to push changes to fork"
+            exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
