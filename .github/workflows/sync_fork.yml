@@ -1,14 +1,9 @@
 name: Sync Fork
 
-# ⚠️ ВАЖНО: Для работы этого workflow необходимо настроить секрет PAT_TOKEN
-# PAT_TOKEN должен иметь разрешения: repo, workflow
-# Создайте Personal Access Token на https://github.com/settings/tokens
-# и добавьте его в секреты репозитория как PAT_TOKEN
-
 on:
   schedule:
-    - cron: '0 3 * * *'  # Запуск каждый день в 3:00 UTC
-  workflow_dispatch:     # Возможность запуска вручную через интерфейс
+    - cron: '0 3 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,75 +12,110 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout fork
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # важно: чтобы git знал всю историю
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Set up Git identity
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Check PAT token
+      - name: Check trigger type
+        id: trigger
         run: |
-          if [ -z "${{ secrets.PAT_TOKEN }}" ]; then
-            echo "❌ PAT_TOKEN secret is not configured. Cannot proceed with sync."
-            exit 1
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "triggered_by=schedule" >> $GITHUB_OUTPUT
+            echo "🕐 Triggered by schedule (cron)"
+          else
+            echo "triggered_by=manual" >> $GITHUB_OUTPUT  
+            echo "👤 Triggered manually"
           fi
-          echo "✅ PAT_TOKEN is configured"
 
       - name: Get upstream repository URL
         id: get-upstream
         run: |
           repo_json=$(gh api repos/${{ github.repository }})
           upstream_url=$(echo "$repo_json" | jq -r '.parent.clone_url // ""')
-          if [ -z "$upstream_url" ]; then
-            echo "This is not a fork. Skipping."
+          if [ -z "$upstream_url" ] || [ "$upstream_url" = "null" ]; then
+            echo "This is not a fork. Skipping sync."
+            echo "is_fork=false" >> $GITHUB_OUTPUT
             exit 0
           fi
+          echo "is_fork=true" >> $GITHUB_OUTPUT
           echo "upstream_url=$upstream_url" >> $GITHUB_OUTPUT
+          echo "🔄 Found upstream: $upstream_url"
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
 
-      - name: Add upstream remote
-        if: steps.get-upstream.outputs.upstream_url != ''
-        run: git remote add upstream "${{ steps.get-upstream.outputs.upstream_url }}"
-
-      - name: Fetch upstream
-        if: steps.get-upstream.outputs.upstream_url != ''
-        run: git fetch upstream
-
-      - name: Merge upstream into fork (keep your changes)
-        if: steps.get-upstream.outputs.upstream_url != ''
+      - name: Sync with upstream (exclude workflows for cron)
+        if: steps.get-upstream.outputs.is_fork == 'true'
         run: |
           BRANCH="${{ github.event.repository.default_branch }}"
+          UPSTREAM_URL="${{ steps.get-upstream.outputs.upstream_url }}"
+          IS_CRON="${{ steps.trigger.outputs.triggered_by }}"
+          
+          echo "🔧 Adding upstream remote..."
+          git remote add upstream "$UPSTREAM_URL"
+          
+          echo "📥 Fetching upstream changes..."
+          git fetch upstream
+          
+          echo "🔄 Checking current branch status..."
           git checkout "$BRANCH"
           
-          # Проверяем, есть ли изменения для merge
+          # Проверяем, есть ли новые коммиты в upstream
           if git merge-base --is-ancestor HEAD upstream/"$BRANCH" 2>/dev/null; then
-            echo "✅ Branch is already up to date with upstream"
+            echo "✅ Fork is already up to date with upstream"
             exit 0
           fi
           
-          # Пытаемся выполнить merge
-          if git merge upstream/"$BRANCH" --allow-unrelated-histories --no-edit; then
-            echo "✅ Successfully merged upstream changes"
-          else
-            echo "⚠️ Merge conflict detected — requires manual resolution"
-            echo "Current status:"
-            git status
+          echo "🔀 Merging upstream changes..."
+          if ! git merge upstream/"$BRANCH" --no-edit --allow-unrelated-histories; then
+            echo "⚠️ Merge conflict detected. Manual resolution required."
             exit 1
           fi
           
-          # Пытаемся выполнить push
-          if git push "https://${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}" "$BRANCH"; then
-            echo "✅ Successfully pushed changes to fork"
-          else
-            echo "❌ Failed to push changes to fork"
-            exit 1
+          # Если запуск по расписанию и есть изменения в workflows - откатываем их
+          if [ "$IS_CRON" = "schedule" ]; then
+            if git diff --name-only HEAD~1 HEAD | grep -q "^\.github/workflows/"; then
+              echo "⚠️ Workflow changes detected in cron run - reverting workflow changes"
+              
+              # Находим все измененные workflow файлы и откатываем их к версии форка
+              git diff --name-only HEAD~1 HEAD | grep "^\.github/workflows/" | while read -r file; do
+                if [ -f "$file" ]; then
+                  echo "🔄 Reverting $file to fork version"
+                  git checkout HEAD~1 -- "$file"
+                fi
+              done
+              
+              # Коммитим откат если есть изменения
+              if ! git diff --quiet; then
+                git add .github/workflows/
+                git commit -m "Revert workflow changes from upstream (cron safety)"
+              fi
+            fi
           fi
+          
+          echo "📤 Pushing changes to fork..."
+          git push origin "$BRANCH"
+          
+          echo "✅ Successfully synced fork with upstream"
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ "${{ steps.get-upstream.outputs.is_fork }}" = "true" ]; then
+            echo "📊 Sync operation completed"
+            echo "- Repository: ${{ github.repository }}"
+            echo "- Branch: ${{ github.event.repository.default_branch }}"
+            echo "- Trigger: ${{ steps.trigger.outputs.triggered_by }}"
+            echo "- Status: ${{ job.status }}"
+          else
+            echo "ℹ️ Repository is not a fork, sync skipped"
+          fi
