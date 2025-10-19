@@ -62,6 +62,12 @@ include:category-food-cn
 # 快递物流
 include:category-logistics-cn
 
+# Electronic
+include:category-electronic-cn
+
+# 汽车
+include:category-automobile-cn
+
 # CDN or SDWAN
 include:aws-cn
 include:baijiayun
@@ -104,9 +110,9 @@ include:vancl
 include:youzan
 include:ziroom
 
-# Electronic
-include:category-electronic-cn
-
+# 多点新鲜
+dmall.com
+dmallcdn.com
 # 孔夫子旧书网
 kongfz.com
 kfzimg.com
@@ -185,7 +191,6 @@ include:51job
 include:afdian
 include:agora
 include:antutu
-include:bitauto
 include:category-collaborate-cn
 include:category-documents-cn
 include:category-ntp-cn
@@ -441,6 +446,7 @@ zzdtec.com
 263.net
 289.com
 2cto.com
+2dfire.com
 3000.com
 310win.com
 315che.com
@@ -651,7 +657,6 @@ cloudxns.com
 cnanzhi.com
 cnepub.com
 cnlaw.net
-cnzz.com
 cocodiy.com
 code666.com
 codeloop.top # 渝ICP备2023015627号-1
@@ -880,7 +885,7 @@ it610.com
 itjuzi.com
 itmop.com
 iyiou.com
-izuche.com
+iyunmu.com
 jb51.com
 jia.com
 jiameng.com
@@ -1013,6 +1018,7 @@ mijisou.com
 mikecrm.com
 minhangshi.com
 miusi.co
+miyatech.com
 mjia.cc
 mmbang.com
 mmbang.info
@@ -1283,6 +1289,7 @@ wrating.com
 wtown.com
 wumii.com
 wuming.com
+wuuxiang.com
 wuximediaglobal.com
 wywyx.com
 xafc.com
@@ -1417,12 +1424,11 @@ zongheng.com
 zpb365.com
 zrblog.net
 zsxq.com
-zuche.com
-zuchecdn.com
 zuhaowan.com
 zuidaima.com
 zuowen8.com
 zuowenwang.net
+zztfly.com
 
 # 京ICP备12006877号-1
 fm3838.com
