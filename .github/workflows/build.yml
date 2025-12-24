@@ -5,6 +5,9 @@ on:
       - master
     paths-ignore:
       - "**/README.md"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 permissions:
   contents: write
 jobs:
