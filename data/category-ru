@@ -19,6 +19,7 @@ ru.net
 include:category-ecommerce-ru
 include:category-entertainment-ru
 include:category-gov-ru
+include:category-retail-ru
 
 # Public transportation
 include:mosmetro
@@ -27,3 +28,19 @@ include:avito
 include:mailru-group
 include:x5
 include:yandex
+
+# Dodo Pizza
+dodopizza.ru
+dodopizza.com
+dodostatic.net
+dodois.com
+dodois.io
+
+# Rostics
+rostics.ru
+uni.rest
+unirest.tech
+
+trbcdn.net
+tbank-online.com
+taxsee.com
