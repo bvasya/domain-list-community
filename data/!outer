@@ -1,3 +1,5 @@
+include:!refilter
+
 include:category-anticensorship
 include:category-dev
 
