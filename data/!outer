@@ -1,23 +1,25 @@
-include:tailscale
-include:manus
-include:linguee
-include:canva
-include:elevenlabs
 include:category-anticensorship
-include:whatsapp
-include:soundcloud
+include:category-dev
+
 include:apple
 include:aws
-include:category-dev
-include:lastfm
+include:canva
 include:cloudflare
+include:elevenlabs
+include:lastfm
+include:linguee
+include:manus
+include:soundcloud
+include:tailscale
+include:whatsapp
 
+#test
 fi.ifconfig.me
 
 #ai
+sc-static.net
 seedance.ai
 suno.com
-sc-static.net
 
 #dev
 gramio.dev
@@ -33,12 +35,12 @@ blynk.io
 
 #media
 nichosee.com
-playlistmachinery.com
 nnmstatic.win
-sf-converter.com
+playlistmachinery.com
 savefrom.net
-trimble.com
+sf-converter.com
 sketchup.com
+trimble.com
 
 #other
 maximkatz.com
