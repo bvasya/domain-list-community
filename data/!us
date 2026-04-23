@@ -1,5 +1,4 @@
 include:google-deepmind
-include:google-labs
 include:openai
 include:anthropic
 include:xai
