@@ -13,6 +13,7 @@ include:linguee
 include:manus
 include:soundcloud
 include:tailscale
+include:telegram
 include:whatsapp
 
 #test
