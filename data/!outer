@@ -5,6 +5,7 @@ include:category-dev
 
 include:apple
 include:aws
+include:bandcamp
 include:canva
 include:cloudflare
 include:elevenlabs
