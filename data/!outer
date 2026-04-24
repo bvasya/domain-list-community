@@ -9,6 +9,7 @@ include:bandcamp
 include:canva
 include:cloudflare
 include:elevenlabs
+include:ibm
 include:lastfm
 include:linguee
 include:manus
