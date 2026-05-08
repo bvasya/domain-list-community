@@ -4,6 +4,7 @@ include:category-anticensorship
 include:category-dev
 
 include:apple
+include:autodesk
 include:aws
 include:bandcamp
 include:canva
@@ -13,6 +14,7 @@ include:ibm
 include:lastfm
 include:linguee
 include:manus
+include:metabrainz
 include:soundcloud
 include:tailscale
 include:telegram
@@ -57,7 +59,8 @@ sf-converter.com
 sketchup.com
 trimble.com
 
-
 #other
+opencollective.com
+opencutlist.org
 maximkatz.com
 exler.es
