@@ -3,6 +3,7 @@ include:!refilter
 include:category-anticensorship
 include:category-dev
 
+include:annas-archive
 include:apple
 include:autodesk
 include:aws
