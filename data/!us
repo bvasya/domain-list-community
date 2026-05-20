@@ -4,4 +4,8 @@ include:anthropic
 include:xai
 include:google
 
+#gemini
+alkalimining-pa.googleapis.com 
+
+
 us.ifconfig.me
