@@ -2,5 +2,6 @@ include:google-deepmind
 include:openai
 include:anthropic
 include:xai
+include:google
 
 us.ifconfig.me
