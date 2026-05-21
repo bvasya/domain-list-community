@@ -3,7 +3,7 @@ include:openai
 include:anthropic
 include:xai
 include:google
-incllude:rutracker
+include:rutracker
 
 #gemini
 alkalimining-pa.googleapis.com 
