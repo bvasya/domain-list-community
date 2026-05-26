@@ -1,9 +1,9 @@
+include:anthropic
+#include:google
 include:google-deepmind
 include:openai
-include:anthropic
-include:xai
-include:google
 include:rutracker
+include:xai
 
 #gemini
 alkalimining-pa.googleapis.com 
