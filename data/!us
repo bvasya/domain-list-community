@@ -2,7 +2,7 @@ include:anthropic
 #include:google
 include:google-deepmind
 include:openai
-include:rutracker
+#include:rutracker
 include:xai
 
 #gemini
