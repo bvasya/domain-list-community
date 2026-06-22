@@ -16,6 +16,7 @@ include:lastfm
 include:linguee
 include:manus
 include:metabrainz
+include:rutracker
 include:soundcloud
 include:tailscale
 include:telegram
