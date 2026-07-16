@@ -10,6 +10,7 @@ include:aws
 include:bandcamp
 include:canva
 include:cloudflare
+include:duolingo
 include:elevenlabs
 include:ibm
 include:lastfm
