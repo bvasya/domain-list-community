@@ -1,12 +1,2 @@
-include:anthropic
-#include:google
-include:google-deepmind
-include:openai
-#include:rutracker
-include:xai
-
-#gemini
-alkalimining-pa.googleapis.com 
-
 
 us.ifconfig.me
