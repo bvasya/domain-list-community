@@ -82,3 +82,13 @@ opencollective.com
 opencutlist.org
 maximkatz.com
 exler.es
+
+#ex us
+include:anthropic
+include:google-deepmind
+include:openai
+include:xai
+#gemini
+alkalimining-pa.googleapis.com 
+
+
