@@ -18,6 +18,7 @@ include:linguee
 include:manus
 include:metabrainz
 include:rutracker
+include:spotify
 include:soundcloud
 include:tailscale
 include:telegram
