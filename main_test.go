@@ -22,10 +22,19 @@ func TestParseEntry(t *testing.T) {
 		{name: "duplicated attrs", typ: "domain", rule: "example.com @ads @ads", wantPlain: "domain:example.com:@ads"},
 		{name: "affiliations", typ: "domain", rule: "example.com &other @ads", wantPlain: "domain:example.com:@ads", wantAffs: []string{"OTHER"}},
 		{name: "regexp", typ: "regexp", rule: `^example\.com$`, wantPlain: `regexp:^example\.com$`},
+		{name: "tld", typ: "domain", rule: "google", wantPlain: "domain:google"},
+		{name: "hyphen inside", typ: "domain", rule: "my-example.com", wantPlain: "domain:my-example.com"},
+		{name: "keyword allows partial", typ: "keyword", rule: "-ads-", wantPlain: "keyword:-ads-"},
 		{name: "invalid regexp", typ: "regexp", rule: "^example(", wantErr: true},
 		{name: "empty rule", typ: "domain", rule: "   ", wantErr: true},
 		{name: "unknown type", typ: "prefix", rule: "example.com", wantErr: true},
 		{name: "invalid domain", typ: "domain", rule: "exa_mple.com @ads", wantErr: true},
+		{name: "empty label", typ: "domain", rule: "example..com", wantErr: true},
+		{name: "trailing dot", typ: "full", rule: "example.com.", wantErr: true},
+		{name: "leading dot", typ: "domain", rule: ".example.com", wantErr: true},
+		{name: "leading hyphen", typ: "domain", rule: "-example.com", wantErr: true},
+		{name: "trailing hyphen", typ: "full", rule: "example-.com", wantErr: true},
+		{name: "overlong label", typ: "domain", rule: strings.Repeat("a", 64) + ".com", wantErr: true},
 		{name: "empty attr", typ: "domain", rule: "example.com @", wantErr: true},
 		{name: "empty affiliation", typ: "domain", rule: "example.com &", wantErr: true},
 		{name: "unknown field", typ: "domain", rule: "example.com ads", wantErr: true},
@@ -108,12 +117,12 @@ func TestParseInclusion(t *testing.T) {
 
 func TestPolishList(t *testing.T) {
 	rules := []struct{ typ, rule string }{
-		{"domain", "example.com"},
-		{"domain", "sub.example.com"},      // Redundant
-		{"full", "www.example.com"},        // Redundant
-		{"full", "example.com"},            // Redundant
+		{"domain", "example.com @cn"},
+		{"domain", "sub.example.com"},      // Redundant, no attribute
+		{"full", "www.example.com @cn"},    // Redundant, same attribute
+		{"full", "example.com"},            // Redundant, no attribute
 		{"full", "example.org"},            // Kept, no parent domain rule
-		{"domain", "ads.example.com @ads"}, // Kept, has attribute
+		{"domain", "ads.example.com @ads"}, // Kept, different attribute
 		{"keyword", "example"},
 	}
 	roughMap := make(map[string]*Entry, len(rules))
@@ -124,7 +133,7 @@ func TestPolishList(t *testing.T) {
 		}
 		roughMap[entry.Plain] = entry
 	}
-	want := []string{"domain:ads.example.com:@ads", "domain:example.com", "full:example.org", "keyword:example"}
+	want := []string{"domain:ads.example.com:@ads", "domain:example.com:@cn", "full:example.org", "keyword:example"}
 	assertPlains(t, "polishList", polishList(roughMap), want)
 }
 
