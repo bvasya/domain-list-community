@@ -12,6 +12,7 @@ include:canva
 include:cloudflare
 include:duolingo
 include:elevenlabs
+include:google-deepmind
 include:ibm
 include:imdb
 include:lastfm
