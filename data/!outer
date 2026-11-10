@@ -24,6 +24,7 @@ include:spotify
 include:soundcloud
 include:tailscale
 include:telegram
+include:vercel
 include:whatsapp
 
 #test
