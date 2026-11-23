@@ -13,6 +13,7 @@ include:cloudflare
 include:duolingo
 include:elevenlabs
 include:google-deepmind
+include:fandom
 include:ibm
 include:imdb
 include:lastfm
@@ -87,6 +88,7 @@ kinozal.jumpingcrab.com
 mixcloud.com
 nichosee.com
 nnmstatic.win
+nocookie.net
 cookeoptics.com
 playlistmachinery.com
 savefrom.net
